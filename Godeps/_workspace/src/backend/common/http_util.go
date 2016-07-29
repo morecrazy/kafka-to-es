@@ -463,7 +463,7 @@ func SendRequest(http_method, urls string, req_body interface{}, req_form map[st
 	// avoid goroutine leak without closing body
 	defer response.Body.Close()
 
-	if response.StatusCode == http.StatusOK {
+	if response.StatusCode == http.StatusOK || response.StatusCode == http.StatusCreated {
 		body, err = ioutil.ReadAll(response.Body)
 		if nil == err {
 			Logger.Debug("body:%v", string(body))

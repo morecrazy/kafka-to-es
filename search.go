@@ -36,7 +36,7 @@ type SearchResult struct {
 func CreateDoc(index, doc_type string, document interface{}) error {
 	start_time := time.Now()
 	defer func() {
-		common.Logger.Info("create doc[index:%s][doc_type:%s][doc_id:%#v][cost:%dus]",
+		common.Logger.Debug("create doc[index:%s][doc_type:%s][doc_id:%#v][cost:%dus]",
 			index, doc_type, time.Now().Sub(start_time).Nanoseconds()/1000)
 	}()
 	url := fmt.Sprintf("%s/%s/%s/", gSearchGroupAddress, index, doc_type)
