@@ -1,0 +1,19 @@
+{
+  "LogFile" : "kafka-logspout-es",
+  "LogDir" : "./log",
+  "LogLevel": "DEBUG",
+  "External": {
+    "brokers": "kafka-test-0:9093",
+    "topic": "codoon-kafka-log",
+    "logUnit": "MB",
+    "esHosts": "192.168.1.204:32769",
+    "index": "trace",
+    "docType": "requestid"
+  },
+  "ExternalInt64": {
+    "channelBufferSize": 2000,
+    "bufferWriterNum": 1,
+    "logSize": 1024,
+    "logBufferSize": 1000
+  }
+}
