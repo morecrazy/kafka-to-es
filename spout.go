@@ -6,9 +6,47 @@ import (
 	"os"
 	"os/signal"
 	"time"
+	"encoding/json"
 )
 
-func writeToEs(bts []byte) error {
+func WriteToLogBuffer(bts []byte) error {
+	d := string(bts)
+	data := strings.Split(d, "|")
+
+	source := map[string]interface{}{
+		"request_id": data[0],
+		"service_code": data[1],
+		"user_id": data[2],
+		"service_name": data[3],
+		"start_time": data[4],
+		"spend_time": data[5],
+		"method_type": data[6],
+		"host": data[7],
+		"api": data[8],
+		"status": data[9],
+	}
+
+	create := map[string]interface{}{
+		"create" : map[string]string{
+		},
+	}
+
+	docBts, _ := json.Marshal(source)
+	creBts, _ := json.Marshal(create)
+
+	line := []byte("\n")
+
+	dat := append(creBts, line...)
+	dat = append(dat, docBts...)
+
+	document := string(dat)
+	if _, err := gLogBuffer.WriteString(document); err != nil {
+		return err
+	}
+	return nil
+}
+
+func WriteToEs(bts []byte) error {
 	d := string(bts)
 	data := strings.Split(d, "|")
 
@@ -50,12 +88,31 @@ func logSpouter(channel chan []byte) {
 	for {
 		select {
 		case msg := <- channel:
-			if err := writeToEs(msg); err != nil {
+			if err := WriteToLogBuffer(msg); err != nil {
 				common.Logger.Error(err.Error())
 			}
 			consumed++
 		case <-closing:
 			break ConsumerLoop
+		}
+	}
+}
+
+func LogBufferReader(logBuffer *LogBuffer) {
+	timer := time.NewTicker(1 * time.Second)
+	for {
+		select {
+		case <- logBuffer.ch:
+			//从buf读取数据,写入到es中
+			if err := logBuffer.BulkWriteToEs(); err != nil {
+				common.Logger.Error(err.Error())
+			}
+		case <-timer.C:
+			//超时时间到,强制读取数据
+			//从buf读取数据,写入es中
+			if err := logBuffer.BulkWriteToEs(); err != nil {
+				common.Logger.Error(err.Error())
+			}
 		}
 	}
 }

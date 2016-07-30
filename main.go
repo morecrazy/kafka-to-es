@@ -30,6 +30,9 @@ var (
 	gSearchHost string
 	gIndex string
 	gDocType string
+
+	//logBuffer
+	gLogBuffer LogBuffer
 )
 
 func init() {
@@ -79,6 +82,9 @@ func main() {
 
 	var err error
 	broker := new(KafkaBroker) //注入kafka broker
+
+	gLogBuffer := new(LogBuffer) //注入logbuffer
+	go LogBufferReader(gLogBuffer)
 
 	common.Logger, err = common.InitLogger("kafka-logspout-es")
 	if err != nil {

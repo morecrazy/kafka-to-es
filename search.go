@@ -52,3 +52,23 @@ func CreateDoc(index, doc_type string, document interface{}) error {
 	}
 	return &SearchError{Code: statusCode, Message: response}
 }
+
+func BulkCreateDoc(index, doc_type string, document interface{}) error {
+	start_time := time.Now()
+	defer func() {
+		common.Logger.Debug("create doc[index:%s][doc_type:%s][doc_id:%#v][cost:%dus]",
+			index, doc_type, time.Now().Sub(start_time).Nanoseconds()/1000)
+	}()
+	url := fmt.Sprintf("%s/%s/%s/_bulk", gSearchGroupAddress, index, doc_type)
+
+	statusCode, response, _ := common.SendRawRequest("POST", url, document)
+	common.Logger.Debug("statusCode: %d", statusCode)
+
+	if statusCode == http.StatusOK {
+		return nil
+	}
+	if statusCode != http.StatusOK || statusCode != http.StatusCreated || statusCode != http.StatusConflict {
+		common.Logger.Warning("bulk create doc failed![%s]", response)
+	}
+	return &SearchError{Code: statusCode, Message: response}
+}
