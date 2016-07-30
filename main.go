@@ -83,7 +83,7 @@ func main() {
 	var err error
 	broker := new(KafkaBroker) //注入kafka broker
 
-	gLogBuffer := new(LogBuffer) //注入logbuffer
+	gLogBuffer := NewLogBuffer() //注入logbuffer
 	go LogBufferReader(gLogBuffer)
 
 	common.Logger, err = common.InitLogger("kafka-logspout-es")

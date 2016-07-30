@@ -14,6 +14,10 @@ type LogBuffer struct {
 	name string
 }
 
+func NewLogBuffer() *LogBuffer {
+	return &LogBuffer{m: new(sync.Mutex), buf: new(bytes.Buffer), len: 0, ch: make(chan bool, 1), name: ""}
+}
+
 func (b *LogBuffer) WriteString(s string) (n int, err error) {
 	b.m.Lock()
 	defer b.m.Unlock()
