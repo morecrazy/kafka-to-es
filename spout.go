@@ -13,7 +13,7 @@ func WriteToLogBuffer(bts []byte) error {
 	d := string(bts)
 	data := strings.Split(d, "|")
 
-	source := map[string]interface{}{
+	source := map[string]string{
 		"request_id": data[0],
 		"service_code": data[1],
 		"user_id": data[2],
@@ -36,10 +36,13 @@ func WriteToLogBuffer(bts []byte) error {
 
 	line := []byte("\n")
 
-	dat := append(creBts, line...)
-	dat = append(dat, docBts...)
+	//拼接byte array
+	dat := append(creBts[:], line[:]...)
+	dat = append(dat[:], docBts[:]...)
+	dat = append(dat[:], line[:]...)
 
 	document := string(dat)
+	common.Logger.Debug("Write document %s to Logbuffer", document)
 	if _, err := gLogBuffer.WriteString(document); err != nil {
 		return err
 	}

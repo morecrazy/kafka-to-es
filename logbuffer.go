@@ -31,7 +31,7 @@ func (b *LogBuffer) WriteString(s string) (n int, err error) {
 func (b *LogBuffer) BulkWriteToEs() error {
 	b.m.Lock()
 	defer b.m.Unlock()
-	document := b.buf.String() + "\n"
+	document := b.buf.String()
 	b.buf.Reset()
 	b.len = 0
 	common.Logger.Debug("starting read string from logbuffer, the document is %s", document)
