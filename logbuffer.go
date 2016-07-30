@@ -32,6 +32,9 @@ func (b *LogBuffer) BulkWriteToEs() error {
 	b.m.Lock()
 	defer b.m.Unlock()
 	document := b.buf.String() + "\n"
+	b.buf.Reset()
+	b.len = 0
+	common.Logger.Debug("starting read string from logbuffer, the document is %s", document)
 	index := gIndex + "-" + time.Now().Format("2006.01.02")
 	if err := BulkCreateDoc(index, gDocType, document); err != nil {
 		return err
