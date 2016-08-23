@@ -70,7 +70,7 @@ func (kafkaBroker *KafkaBroker) ConsumeMsg(brokers []string, topic string) error
 			for {
 				select {
 				case msg := <-partitionConsumer.Messages():
-					common.Logger.Debug("Consumed message %s, offset %d\n", string(msg.Value), msg.Offset)
+					common.Logger.Info("Consumed message %s, offset %d\n", string(msg.Value), msg.Offset)
 					channel <- msg.Value
 					consumed++
 				case <-closing:
