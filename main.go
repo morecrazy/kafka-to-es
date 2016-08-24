@@ -32,7 +32,7 @@ var (
 	gDocType string
 
 	//logBuffer
-	gLogBuffer *LogBuffer = NewLogBuffer()
+	//gLogBuffer *LogBuffer = NewLogBuffer()
 )
 
 func init() {
@@ -83,7 +83,7 @@ func main() {
 	var err error
 	broker := new(KafkaBroker) //注入kafka broker
 
-	go LogBufferReader(gLogBuffer)
+	//go LogBufferReader(gLogBuffer)
 
 	common.Logger, err = common.InitLogger("kafka-logspout-es")
 	if err != nil {

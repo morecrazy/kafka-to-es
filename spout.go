@@ -9,7 +9,7 @@ import (
 	"encoding/json"
 )
 
-func WriteToLogBuffer(bts []byte) error {
+func WriteToLogBuffer(logBuffer *LogBuffer, bts []byte) error {
 	d := string(bts)
 	data := strings.Split(d, "|")
 
@@ -43,7 +43,7 @@ func WriteToLogBuffer(bts []byte) error {
 
 	document := string(dat)
 	common.Logger.Debug("Write document %s to Logbuffer", document)
-	if _, err := gLogBuffer.WriteString(document); err != nil {
+	if _, err := logBuffer.WriteString(document); err != nil {
 		return err
 	}
 	return nil
@@ -76,8 +76,9 @@ func WriteToEs(bts []byte) error {
 func logSpouter(channel chan []byte) {
 	var (
 		closing = make(chan struct{})
+		logBuffer *LogBuffer = NewLogBuffer()
 	)
-
+	go LogBufferReader(logBuffer)
 	go func() {
 		signals := make(chan os.Signal, 1)
 		signal.Notify(signals, os.Kill, os.Interrupt)
@@ -91,7 +92,7 @@ func logSpouter(channel chan []byte) {
 	for {
 		select {
 		case msg := <- channel:
-			if err := WriteToLogBuffer(msg); err != nil {
+			if err := WriteToLogBuffer(logBuffer, msg); err != nil {
 				common.Logger.Error(err.Error())
 			}
 			consumed++
