@@ -22,7 +22,7 @@ func WriteToLogBuffer(logBuffer *LogBuffer, bts []byte) error {
 		"spend_time": data[5],
 		"method_type": data[6],
 		"host": data[7],
-		"api": data[8],
+		"api": strings.Split(data[8], "?")[0],
 		"status": data[9],
 	}
 
