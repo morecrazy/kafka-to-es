@@ -20,8 +20,8 @@ func NewLogBuffer() *LogBuffer {
 
 func (b *LogBuffer) WriteString(s string) (n int, err error) {
 	b.m.Lock()
-	defer b.m.Unlock()
 	b.len ++
+	b.m.Unlock()
 	if b.len == gLogBufferSize {
 		b.ch <- true
 	}
@@ -29,11 +29,11 @@ func (b *LogBuffer) WriteString(s string) (n int, err error) {
 }
 
 func (b *LogBuffer) BulkWriteToEs() error {
-	b.m.Lock()
-	defer b.m.Unlock()
 	document := b.buf.String()
+	b.m.Lock()
 	b.buf.Reset()
 	b.len = 0
+	b.m.Unlock()
 	common.Logger.Debug("starting read string from logbuffer, the document is %s", document)
 	index := gIndex + "-" + time.Now().Format("2006.01.02")
 	if document != "" {
