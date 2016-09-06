@@ -1,12 +1,12 @@
 package main
 
 import (
-	"strings"
-	"third/kafka"
 	"backend/common"
 	"os"
 	"os/signal"
+	"strings"
 	"sync"
+	"third/kafka"
 )
 
 type Broker interface {
@@ -29,8 +29,8 @@ func (kafkaBroker *KafkaBroker) ConsumeMsg(brokers []string, topic string) error
 		return err
 	}
 	var (
-		closing  = make(chan struct{})
-		wg       sync.WaitGroup
+		closing = make(chan struct{})
+		wg      sync.WaitGroup
 	)
 
 	go func() {
@@ -41,11 +41,15 @@ func (kafkaBroker *KafkaBroker) ConsumeMsg(brokers []string, topic string) error
 		close(closing)
 	}()
 
-	partitionList,err := consumer.Partitions(topic)
+	partitionList, err := consumer.Partitions(topic)
 	if err != nil {
 		common.Logger.Error(err.Error())
 		return err
 	}
+
+	//go func() {
+	//todo: 把脚本功能移植到这里; 做_mapping；_timestamp问题;
+	//}
 
 	//针对topic的每一个partition都开启一个partition consumer
 	for _, partition := range partitionList {
@@ -66,7 +70,7 @@ func (kafkaBroker *KafkaBroker) ConsumeMsg(brokers []string, topic string) error
 			}
 
 			consumed := 0
-			ConsumerLoop:
+		ConsumerLoop:
 			for {
 				select {
 				case msg := <-partitionConsumer.Messages():
@@ -89,4 +93,3 @@ func (kafkaBroker *KafkaBroker) ConsumeMsg(brokers []string, topic string) error
 	}
 	return nil
 }
-

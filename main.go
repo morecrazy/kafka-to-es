@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"backend/common"
 	"flag"
+	"fmt"
 	"runtime"
 	"sync"
 )
@@ -13,26 +13,23 @@ const (
 )
 
 var (
-	wg sync.WaitGroup
-	g_conf_file string
-	gRedisPath string
-	gRedisKey string
-	gBrokers string
-	gTopic string
+	wg                 sync.WaitGroup
+	g_conf_file        string
+	gRedisPath         string
+	gRedisKey          string
+	gBrokers           string
+	gTopic             string
 	gChannelBufferSize int64
-	gBufferWriterNum int64
-	gLogSize int64
-	gLogUnit string
-	gLogBufferSize int64
+	gBufferWriterNum   int64
+	gLogSize           int64
+	gLogUnit           string
+	gLogBufferSize     int64
 
 	//Elasticsearch
 	gSearchGroupAddress string
-	gSearchHost string
-	gIndex string
-	gDocType string
-
-	//logBuffer
-	//gLogBuffer *LogBuffer = NewLogBuffer()
+	gSearchHost         string
+	gIndex              string
+	gDocType            string
 )
 
 func init() {
@@ -40,7 +37,7 @@ func init() {
 	flag.StringVar(&g_conf_file, "c", "", usage)
 }
 
-func InitExternalConfig(config *common.Configure)  {
+func InitExternalConfig(config *common.Configure) {
 	gRedisPath = config.External["redisPath"]
 	gRedisKey = config.External["redisKey"]
 	gLogUnit = config.External["logUnit"]
@@ -57,8 +54,6 @@ func InitExternalConfig(config *common.Configure)  {
 	gChannelBufferSize = config.ExternalInt64["channelBufferSize"]
 	gBufferWriterNum = config.ExternalInt64["bufferWriterNum"]
 	gLogBufferSize = config.ExternalInt64["logBufferSize"]
-
-
 }
 
 func main() {
@@ -83,8 +78,6 @@ func main() {
 	var err error
 	broker := new(KafkaBroker) //注入kafka broker
 
-	//go LogBufferReader(gLogBuffer)
-
 	common.Logger, err = common.InitLogger("kafka-logspout-es")
 	if err != nil {
 		fmt.Println("init log error")
@@ -96,7 +89,7 @@ func main() {
 	brokerList, _ := broker.GetBrokerList()
 
 	wg.Add(1)
-	go func(){
+	go func() {
 		defer wg.Done()
 		err = broker.ConsumeMsg(brokerList, gTopic)
 	}()
