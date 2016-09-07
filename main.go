@@ -102,6 +102,8 @@ func main() {
 
 	//启动定时任务
 	startTimer(CronModifyProperties)
+	startTimer(CronClearIndexReplicas)
+	startTimer(CronDeleteIndex)
 
 	fmt.Println("Sink log service is started...")
 	brokerList, _ := broker.GetBrokerList()
