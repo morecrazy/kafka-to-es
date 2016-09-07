@@ -171,3 +171,23 @@ func ClearIndexCache(index string) error {
 	}
 	return &SearchError{Code: statusCode, Message: response}
 }
+
+func AddTimestamp(index string, document interface{}) error {
+	start_time := time.Now()
+	defer func() {
+		common.Logger.Debug("Add Timestamp [index:%s][doc_type:%s][doc_id:%#v][cost:%dus]",
+			index, time.Now().Sub(start_time).Nanoseconds()/1000)
+	}()
+	url := fmt.Sprintf("%s/%s", gSearchGroupAddress, index)
+
+	statusCode, response, _ := common.SendJsonRequest("PUT", url, document)
+	common.Logger.Debug("statusCode: %d", statusCode)
+
+	if statusCode == http.StatusOK {
+		return nil
+	}
+	if statusCode != http.StatusOK || statusCode != http.StatusCreated || statusCode != http.StatusConflict {
+		common.Logger.Warning("Add Timestamp failed![%s]", response)
+	}
+	return &SearchError{Code: statusCode, Message: response}
+}

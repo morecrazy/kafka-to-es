@@ -57,7 +57,7 @@ func InitExternalConfig(config *common.Configure) {
 	gLogBufferSize = config.ExternalInt64["logBufferSize"]
 }
 
-func startTimer(f func()) {
+func startTimer(f func() error) {
     go func() {
         for {
             f()
@@ -99,6 +99,9 @@ func main() {
 		return
 	}
 	InitExternalConfig(common.Config)
+
+	//启动定时任务
+	startTimer(CronModifyProperties)
 
 	fmt.Println("Sink log service is started...")
 	brokerList, _ := broker.GetBrokerList()

@@ -5,7 +5,6 @@ import (
 	"strconv"
 )
 
-
 //清除昨天之前索引的备份
 func CronClearIndexReplicas() error {
 	document := map[string]interface{}{
@@ -34,7 +33,6 @@ func CronDeleteIndex() error {
 	return nil
 }
 
-
 //修改索引文档properties
 func CronModifyProperties() error {
 	startHour := 0
@@ -54,6 +52,38 @@ func CronModifyProperties() error {
 					"user_id": map[string]string{
 						"type": "string",
 						"index": "not_analyzed",
+					},
+					"request_id": map[string]string{
+						"type": "string",
+						"index": "no",
+					},
+					"host": map[string]string{
+						"type": "string",
+						"index": "no",
+					},
+					"status": map[string]string{
+						"type": "string",
+						"index": "no",
+					},
+					"start_time": map[string]string{
+						"type": "string",
+						"index": "no",
+					},
+					"spend_time": map[string]string{
+						"type": "string",
+						"index": "no",
+					},
+					"service_name": map[string]string{
+						"type": "string",
+						"index": "no",
+					},
+					"service_code": map[string]string{
+						"type": "string",
+						"index": "no",
+					},
+					"method_type": map[string]string{
+						"type": "string",
+						"index": "no",
 					},
 				},
 			},
