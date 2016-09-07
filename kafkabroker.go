@@ -47,10 +47,6 @@ func (kafkaBroker *KafkaBroker) ConsumeMsg(brokers []string, topic string) error
 		return err
 	}
 
-	//go func() {
-	//todo: 把脚本功能移植到这里; 做_mapping；_timestamp问题;
-	//}
-
 	//针对topic的每一个partition都开启一个partition consumer
 	for _, partition := range partitionList {
 		common.Logger.Info("Initiating a partition Consumer..")

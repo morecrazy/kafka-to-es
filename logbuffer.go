@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"sync"
+	"strconv"
 	"backend/common"
 	"time"
 )
@@ -36,8 +37,10 @@ func (b *LogBuffer) BulkWriteToEs() error {
 	b.m.Unlock()
 	common.Logger.Debug("starting read string from logbuffer, the document is %s", document)
 	index := gIndex + "-" + time.Now().Format("2006.01.02")
+	now := time.Now()
+	hour,_,_ := now.Clock()
 	if document != "" {
-		if err := BulkCreateDoc(index, gDocType, document); err != nil {
+		if err := BulkCreateDoc(index, strconv.Itoa(hour), document); err != nil {
 			return err
 		}
 	}

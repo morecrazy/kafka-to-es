@@ -72,3 +72,102 @@ func BulkCreateDoc(index, doc_type string, document interface{}) error {
 	}
 	return &SearchError{Code: statusCode, Message: response}
 }
+
+func ClearIndexReplicas(index string, document interface{}) error {
+	start_time := time.Now()
+	defer func() {
+		common.Logger.Debug("clear index replicas doc[index:%s][doc_type:%s][doc_id:%#v][cost:%dus]",
+			index, time.Now().Sub(start_time).Nanoseconds()/1000)
+	}()
+	url := fmt.Sprintf("%s/%s/_settings", gSearchGroupAddress, index)
+
+	statusCode, response, _ := common.SendJsonRequest("PUT", url, document)
+	common.Logger.Debug("statusCode: %d", statusCode)
+
+	if statusCode == http.StatusOK {
+		return nil
+	}
+	if statusCode != http.StatusOK || statusCode != http.StatusCreated || statusCode != http.StatusConflict {
+		common.Logger.Warning("clear index replicas failed![%s]", response)
+	}
+	return &SearchError{Code: statusCode, Message: response}
+}
+
+func ModifyProperties(index, doc_type string, document interface{}) error {
+	start_time := time.Now()
+	defer func() {
+		common.Logger.Debug("ModifyProperties doc[index:%s][doc_type:%s][doc_id:%#v][cost:%dus]",
+			index, doc_type, time.Now().Sub(start_time).Nanoseconds()/1000)
+	}()
+	url := fmt.Sprintf("%s/%s/%s/_mapping?pretty", gSearchGroupAddress, index, doc_type)
+
+	statusCode, response, _ := common.SendJsonRequest("PUT", url, document)
+	common.Logger.Debug("statusCode: %d", statusCode)
+
+	if statusCode == http.StatusOK {
+		return nil
+	}
+	if statusCode != http.StatusOK || statusCode != http.StatusCreated || statusCode != http.StatusConflict {
+		common.Logger.Warning("ModifyProperties failed![%s]", response)
+	}
+	return &SearchError{Code: statusCode, Message: response}
+}
+func DeleteIndex(index string) error {
+	start_time := time.Now()
+	defer func() {
+		common.Logger.Debug("Delete Index[index:%s][doc_type:%s][doc_id:%#v][cost:%dus]",
+			index, time.Now().Sub(start_time).Nanoseconds()/1000)
+	}()
+	url := fmt.Sprintf("%s/%s", gSearchGroupAddress, index)
+
+	statusCode, response, _ := common.SendRawRequest("DELETE", url, nil)
+	common.Logger.Debug("statusCode: %d", statusCode)
+
+	if statusCode == http.StatusOK {
+		return nil
+	}
+	if statusCode != http.StatusOK || statusCode != http.StatusCreated || statusCode != http.StatusConflict {
+		common.Logger.Warning("Delete Index failed![%s]", response)
+	}
+	return &SearchError{Code: statusCode, Message: response}
+}
+
+func OptimizeIndex(index string) error {
+	start_time := time.Now()
+	defer func() {
+		common.Logger.Debug("OptimizeIndex [index:%s][doc_type:%s][doc_id:%#v][cost:%dus]",
+			index, time.Now().Sub(start_time).Nanoseconds()/1000)
+	}()
+	url := fmt.Sprintf("%s/%s/_optimize", gSearchGroupAddress, index)
+
+	statusCode, response, _ := common.SendRawRequest("POST", url, nil)
+	common.Logger.Debug("statusCode: %d", statusCode)
+
+	if statusCode == http.StatusOK {
+		return nil
+	}
+	if statusCode != http.StatusOK || statusCode != http.StatusCreated || statusCode != http.StatusConflict {
+		common.Logger.Warning("Optimize Index failed![%s]", response)
+	}
+	return &SearchError{Code: statusCode, Message: response}
+}
+
+func ClearIndexCache(index string) error {
+	start_time := time.Now()
+	defer func() {
+		common.Logger.Debug("Clear index cache[index:%s][doc_type:%s][doc_id:%#v][cost:%dus]",
+			index, time.Now().Sub(start_time).Nanoseconds()/1000)
+	}()
+	url := fmt.Sprintf("%s/%s/_cache/clear", gSearchGroupAddress, index)
+
+	statusCode, response, _ := common.SendRawRequest("POST", url, nil)
+	common.Logger.Debug("statusCode: %d", statusCode)
+
+	if statusCode == http.StatusOK {
+		return nil
+	}
+	if statusCode != http.StatusOK || statusCode != http.StatusCreated || statusCode != http.StatusConflict {
+		common.Logger.Warning("Clear index cache failed![%s]", response)
+	}
+	return &SearchError{Code: statusCode, Message: response}
+}
