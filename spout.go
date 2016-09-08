@@ -31,7 +31,11 @@ func WriteToLogBuffer(logBuffer *LogBuffer, bts []byte) error {
 		},
 	}
 
-	docBts, _ := json.Marshal(source)
+	docBts, err := json.Marshal(source)
+	if err != nil {
+		common.Logger.Error("Marshal Json failed %v", data)
+		return err
+	}
 	creBts, _ := json.Marshal(create)
 
 	line := []byte("\n")
