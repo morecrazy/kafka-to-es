@@ -55,7 +55,7 @@ func CronModifyProperties() error {
 					},
 					"request_id": map[string]string{
 						"type": "string",
-						"index": "no",
+						"index": "not_analyzed",
 					},
 					"host": map[string]string{
 						"type": "string",
